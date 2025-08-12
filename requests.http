@@ -1,0 +1,16 @@
+POST http://localhost:3333/courses/
+Content-Type: application/json
+
+{
+    "name": "Curso de Node.js",
+    "description": "Curso de Node.js",
+    "price": 100
+}
+
+###
+
+GET http://localhost:3333/courses
+
+###
+
+GET http://localhost:3333/courses/1
