@@ -1,10 +1,9 @@
-POST http://localhost:3333/courses/
+POST http://localhost:3333/courses
 Content-Type: application/json
 
 {
-    "name": "Curso de Node.js",
-    "description": "Curso de Node.js",
-    "price": 100
+    "title": "Curso de Drizzle ORM",
+    "description": "Curso de Node.js"
 }
 
 ###
@@ -13,4 +12,4 @@ GET http://localhost:3333/courses
 
 ###
 
-GET http://localhost:3333/courses/1
+GET http://localhost:3333/courses/6ab11e7b-1d20-4826-93ca-7a4f2328e987
