@@ -8,6 +8,7 @@
         "db:studio": "drizzle-kit studio",
         "db:makemigrations": "drizzle-kit generate",
         "db:migrate": "drizzle-kit migrate",
+        "db:seed": "node --env-file .env src/database/seed.ts --close-connection",
         "lint": "biome check .",
         "lint:fix": "biome check --write ."
     },
@@ -28,6 +29,7 @@
     },
     "devDependencies": {
         "@biomejs/biome": "^2.1.4",
+        "@faker-js/faker": "^9.9.0",
         "@rueda.dev/config": "^1.1.1",
         "@types/node": "^24.2.1",
         "drizzle-kit": "^0.31.4",

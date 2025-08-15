@@ -2,13 +2,18 @@ POST http://localhost:3333/courses
 Content-Type: application/json
 
 {
-    "title": "Curso de Drizzle ORM",
-    "description": "Curso de Node.js"
+    "title": "Curso de React Native",
+    "description": "Curso de React Native bem legal",
+    "price": 100
 }
 
 ###
 
-GET http://localhost:3333/courses
+GET http://localhost:3333/courses?page=2
+
+###
+
+GET http://localhost:3333/courses?search=ORM&
 
 ###
 

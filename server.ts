@@ -9,6 +9,7 @@ import {
     type ZodTypeProvider,
 } from "fastify-type-provider-zod";
 
+import { requestErrorHandler } from "./src/middlewares/errorHandler.ts";
 import { coursesRoutes } from "./src/routes/courses/routes.ts";
 
 const app = fastify({
@@ -44,6 +45,9 @@ if (process.env.NODE_ENV === "development") {
 
 app.setValidatorCompiler(validatorCompiler);
 app.setSerializerCompiler(serializerCompiler);
+
+// Middlewares
+app.setErrorHandler(requestErrorHandler);
 
 // Route plugins
 app.register(coursesRoutes);

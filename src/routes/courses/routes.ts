@@ -1,8 +1,8 @@
-import { eq } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, type SQL } from "drizzle-orm";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import z from "zod";
 
-import { createCourseBodySchema } from "./schemas.ts";
+import { createCourseBodySchema, errorCreateCourseSchema } from "./schemas.ts";
 import { db } from "../../database/client.ts";
 import { courses } from "../../database/schema.ts";
 
@@ -14,6 +14,11 @@ export const coursesRoutes: FastifyPluginAsyncZod = async (app) => {
             schema: {
                 tags: ["courses"],
                 summary: "Get all courses",
+                querystring: z.object({
+                    search: z.string().optional(), // Query string always optional
+                    orderBy: z.enum(["id", "title", "price"]).optional().default("id"),
+                    page: z.coerce.number().optional().default(1),
+                }),
                 response: {
                     200: z.object({
                         courses: z.array(
@@ -24,14 +29,33 @@ export const coursesRoutes: FastifyPluginAsyncZod = async (app) => {
                                 price: z.number().nullable(),
                             }),
                         ),
+                        total: z.number(),
                     }),
                 },
             },
         },
         async (request, reply) => {
-            const result = await db.select().from(courses);
+            const { search, orderBy, page } = request.query;
 
-            reply.status(200).send({ courses: result });
+            const conditions: SQL[] = [];
+
+            if (search) {
+                conditions.push(ilike(courses.title, `%${search}%`));
+            }
+
+            const [result, total] = await Promise.all([
+                db
+                    .select()
+                    .from(courses)
+                    .orderBy(asc(courses[orderBy]))
+                    .offset((page - 1) * 2)
+                    .limit(2)
+                    .where(and(...conditions)),
+
+                db.$count(courses, and(...conditions)),
+            ]);
+
+            reply.status(200).send({ courses: result, total });
         },
     );
 
@@ -70,7 +94,6 @@ export const coursesRoutes: FastifyPluginAsyncZod = async (app) => {
             return reply.status(404).send();
         },
     );
-
     // Create a course
     app.post(
         "/courses",
@@ -81,6 +104,13 @@ export const coursesRoutes: FastifyPluginAsyncZod = async (app) => {
                 body: createCourseBodySchema,
                 response: {
                     201: z.object({ courseId: z.uuid() }).describe("Course created succesfully !"),
+                    400: z
+                        .object({
+                            errors: z.object(errorCreateCourseSchema),
+                        })
+                        .describe("Incorrect data format"),
+                    409: z.object({ error: z.string() }).describe("Course title already registred."),
+                    500: z.object({ error: z.string() }).describe("Internal unexpected server error"),
                 },
             },
         },
@@ -90,9 +120,13 @@ export const coursesRoutes: FastifyPluginAsyncZod = async (app) => {
                 .values({
                     title: request.body.title,
                     description: request.body.description ?? null,
-                    price: request.body.price,
+                    price: request.body.price ?? 0,
                 })
                 .returning({ id: courses.id });
+
+            // if (created.length === 0) {
+            //     reply.status(409).send({ error: "Course title already registred." });
+            // }
 
             const createdRowId = created[0]!.id;
             reply.status(201).send({ courseId: createdRowId });
