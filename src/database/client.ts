@@ -1,5 +1,7 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 
-export const db = drizzle(process.env.DATABASE_URL, {
-    logger: true,
+import { env } from "../../env/index.ts";
+
+export const db = drizzle(env.DATABASE_URL, {
+    logger: env.NODE_ENV === "development",
 });

@@ -9,10 +9,11 @@ import {
     type ZodTypeProvider,
 } from "fastify-type-provider-zod";
 
-import { requestErrorHandler } from "./src/middlewares/errorHandler.ts";
-import { coursesRoutes } from "./src/routes/courses/routes.ts";
+import { requestErrorHandler } from "./middlewares/errorHandler.ts";
+import { coursesRoutes } from "./routes/courses/routes.ts";
+import { env } from "../env/index.ts";
 
-const app = fastify({
+export const app = fastify({
     logger: {
         transport: {
             target: "pino-pretty",
@@ -24,7 +25,7 @@ const app = fastify({
     },
 }).withTypeProvider<ZodTypeProvider>();
 
-if (process.env.NODE_ENV === "development") {
+if (env.NODE_ENV === "development") {
     app.register(fastifySwagger, {
         openapi: {
             info: {
@@ -51,7 +52,3 @@ app.setErrorHandler(requestErrorHandler);
 
 // Route plugins
 app.register(coursesRoutes);
-
-app.listen({ port: 3333 }).then(() => {
-    console.log("HTTP server runing !");
-});

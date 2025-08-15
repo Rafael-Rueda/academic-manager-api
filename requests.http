@@ -13,8 +13,8 @@ GET http://localhost:3333/courses?page=2
 
 ###
 
-GET http://localhost:3333/courses?search=ORM&
+GET http://localhost:3333/courses?search=quidem&
 
 ###
 
-GET http://localhost:3333/courses/6ab11e7b-1d20-4826-93ca-7a4f2328e987
+GET http://localhost:3333/courses/ae5af11a-1568-4b94-9ec0-70e54986d645

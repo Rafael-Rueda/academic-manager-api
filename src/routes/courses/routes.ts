@@ -1,10 +1,10 @@
-import { and, asc, desc, eq, ilike, type SQL } from "drizzle-orm";
+import { and, asc, count, desc, eq, ilike, type SQL } from "drizzle-orm";
 import type { FastifyPluginAsyncZod } from "fastify-type-provider-zod";
 import z from "zod";
 
 import { createCourseBodySchema, errorCreateCourseSchema } from "./schemas.ts";
 import { db } from "../../database/client.ts";
-import { courses } from "../../database/schema.ts";
+import { courses, enrollments } from "../../database/schema.ts";
 
 export const coursesRoutes: FastifyPluginAsyncZod = async (app) => {
     // List all courses
@@ -27,6 +27,7 @@ export const coursesRoutes: FastifyPluginAsyncZod = async (app) => {
                                 title: z.string(),
                                 description: z.string().nullable(),
                                 price: z.number().nullable(),
+                                enrollments: z.number(),
                             }),
                         ),
                         total: z.number(),
@@ -45,11 +46,19 @@ export const coursesRoutes: FastifyPluginAsyncZod = async (app) => {
 
             const [result, total] = await Promise.all([
                 db
-                    .select()
+                    .select({
+                        id: courses.id,
+                        title: courses.title,
+                        description: courses.description,
+                        price: courses.price,
+                        enrollments: count(enrollments.id),
+                    })
                     .from(courses)
                     .orderBy(asc(courses[orderBy]))
                     .offset((page - 1) * 2)
                     .limit(2)
+                    .leftJoin(enrollments, eq(courses.id, enrollments.courseId))
+                    .groupBy(courses.id)
                     .where(and(...conditions)),
 
                 db.$count(courses, and(...conditions)),
