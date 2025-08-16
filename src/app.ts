@@ -10,6 +10,7 @@ import {
 } from "fastify-type-provider-zod";
 
 import { requestErrorHandler } from "./middlewares/errorHandler.ts";
+import { authRoutes } from "./routes/auth/routes.ts";
 import { coursesRoutes } from "./routes/courses/routes.ts";
 import { env } from "../env/index.ts";
 
@@ -52,3 +53,4 @@ app.setErrorHandler(requestErrorHandler);
 
 // Route plugins
 app.register(coursesRoutes);
+app.register(authRoutes);

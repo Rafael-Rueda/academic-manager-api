@@ -7,11 +7,11 @@ async function seed() {
     const usersInsert = await db
         .insert(users)
         .values([
-            { name: faker.person.fullName(), email: faker.internet.email() },
-            { name: faker.person.fullName(), email: faker.internet.email() },
-            { name: faker.person.fullName(), email: faker.internet.email() },
-            { name: faker.person.fullName(), email: faker.internet.email() },
-            { name: faker.person.fullName(), email: faker.internet.email() },
+            { name: faker.person.fullName(), email: faker.internet.email(), confirmed: true },
+            { name: faker.person.fullName(), email: faker.internet.email(), confirmed: true },
+            { name: faker.person.fullName(), email: faker.internet.email(), confirmed: true },
+            { name: faker.person.fullName(), email: faker.internet.email(), confirmed: true },
+            { name: faker.person.fullName(), email: faker.internet.email(), confirmed: true },
         ])
         .returning();
 

@@ -5,12 +5,14 @@ import z from "zod";
 import { createCourseBodySchema, errorCreateCourseSchema } from "./schemas.ts";
 import { db } from "../../database/client.ts";
 import { courses, enrollments } from "../../database/schema.ts";
+import { authenticate } from "../../middlewares/authenticate.ts";
 
 export const coursesRoutes: FastifyPluginAsyncZod = async (app) => {
     // List all courses
     app.get(
         "/courses",
         {
+            preHandler: [authenticate],
             schema: {
                 tags: ["courses"],
                 summary: "Get all courses",
@@ -72,6 +74,7 @@ export const coursesRoutes: FastifyPluginAsyncZod = async (app) => {
     app.get(
         "/courses/:id",
         {
+            preHandler: [authenticate],
             schema: {
                 tags: ["courses"],
                 summary: "Get a specific course",
@@ -107,6 +110,7 @@ export const coursesRoutes: FastifyPluginAsyncZod = async (app) => {
     app.post(
         "/courses",
         {
+            preHandler: [authenticate],
             schema: {
                 tags: ["courses"],
                 summary: "Create a course",
